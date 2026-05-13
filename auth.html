@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CloudPro | Secure Access</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen font-['Outfit']">
+    <div class="bg-white p-10 rounded-[40px] shadow-xl w-full max-w-md border border-slate-100">
+        <div class="text-center mb-8">
+            <h1 id="authTitle" class="text-3xl font-black italic tracking-tighter uppercase">Login</h1>
+            <p id="authSub" class="text-slate-400 text-sm">Welcome back to CloudPro</p>
+        </div>
+
+        <form onsubmit="handleSubmit(event)" class="space-y-4">
+            <input type="email" id="email" placeholder="Email Address" required class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-200 focus:ring-orange-500 outline-none transition">
+            
+            <input type="password" id="password" minlength="6" placeholder="Password (Min 6 chars)" required class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-200 focus:ring-orange-500 outline-none transition">
+            
+            <button type="submit" id="btnText" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl hover:bg-orange-500 transition-all shadow-lg shadow-slate-200">CONTINUE</button>
+        </form>
+
+        <div class="mt-6 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <p id="toggleText" class="cursor-pointer hover:text-orange-500" onclick="toggleAuth()">New here? Create Account</p>
+        </div>
+    </div>
+
+    <script>
+    let isLogin = true;
+
+    function toggleAuth() {
+        isLogin = !isLogin;
+        document.getElementById('authTitle').innerText = isLogin ? "Login" : "Sign Up";
+        document.getElementById('authSub').innerText = isLogin ? "Welcome back to CloudPro" : "Join our premium kitchen";
+        document.getElementById('toggleText').innerText = isLogin ? "New here? Create Account" : "Have an account? Login";
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // 1. JS Password Validation
+        if (password.length < 6) {
+            alert("⚠️ Password must be at least 6 characters long.");
+            return;
+        }
+
+        // 2. 🚀 HARDCODED ADMIN BYPASS
+        if (email === 'admin@gmail.com' && password === '123456') {
+            localStorage.clear();
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userRole', 'Admin'); 
+            localStorage.setItem('isAdmin', 'true'); 
+            window.location.href = 'admin.html';
+            return; // Stop the script here so it doesn't hit the backend
+        }
+
+        // 3. 🛵 HARDCODED DRIVER BYPASS
+        if (email === 'driver@gmail.com' && password === '123456') {
+            localStorage.clear();
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userRole', 'Driver'); 
+            window.location.href = 'delivery.html';
+            return; // Stop the script here so it doesn't hit the backend
+        }
+
+        // 4. NORMAL CUSTOMER LOGIN/SIGNUP
+        const endpoint = isLogin ? 'login' : 'signup';
+
+        try {
+            // Using 127.0.0.1 for Mac stability
+            const res = await fetch(`http://127.0.0.1:5001/api/auth/${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await res.json();
+
+            if (res.ok) {
+                if (isLogin) {
+                    // Success Login Flow
+                    localStorage.clear(); 
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('isAdmin', data.isAdmin ? 'true' : 'false');
+
+                    if (data.isAdmin) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'index.html';
+                    }
+                } else {
+                    // Success Signup Flow
+                    alert("Account created successfully! Please login.");
+                    toggleAuth(); 
+                }
+            } else {
+                // Server Error Response
+                alert(data.error || "Authentication failed. Please check credentials.");
+            }
+        } catch (err) {
+            console.error("Connection Error:", err);
+            alert("Cannot connect to server. Ensure 'node server.js' is running on Port 5001.");
+        }
+    }
+</script>
+</body>
+</html>
