@@ -387,9 +387,10 @@
             if (state === 'history') {
                 document.getElementById('map').style.display = 'none';
                 clearInterval(refreshTimer);
-            } else if (state === 'searching') {
+            } else if (state === 'searching' || state === 'success') {
+                document.getElementById('map').style.display = 'none';
+            } else if (state === 'active') {
                 document.getElementById('map').style.display = 'block';
-                initMap();
             }
         }
 
