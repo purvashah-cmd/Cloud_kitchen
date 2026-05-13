@@ -330,6 +330,18 @@ app.patch('/api/delivery/complete/:id', async (req, res) => {
     res.json({ success: true });
 });
 
+app.get('/api/delivery/history/:driverName', async (req, res) => {
+    try {
+        const history = await Order.find({ 
+            deliveryBoy: req.params.driverName, 
+            status: 'Delivered' 
+        }).sort({ updatedAt: -1 }).limit(50);
+        res.json(history);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch history" });
+    }
+});
+
 app.patch('/api/order/:id/:field', async (req, res) => {
     try {
         const { id, field } = req.params;
