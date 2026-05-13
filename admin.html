@@ -255,7 +255,7 @@
             const brandName = document.getElementById('newBrandName').value.trim();
             
             try {
-                const res = await fetch('http://127.0.0.1:5001/api/menu/add', {
+                const res = await fetch('/api/menu/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -292,7 +292,7 @@
             if(!confirm(`⚠️ WARNING: Are you sure you want to permanently delete "${brandToDelete}" and ALL its menu items?`)) return;
             
             try {
-                await fetch(`http://127.0.0.1:5001/api/menu/brand/${encodeURIComponent(brandToDelete)}`, { method: 'DELETE' });
+                await fetch(`/api/menu/brand/${encodeURIComponent(brandToDelete)}`, { method: 'DELETE' });
                 
                 // Remove from local memory
                 customBrands = customBrands.filter(b => b.name !== brandToDelete);
@@ -314,7 +314,7 @@
         async function handleAddNewItem(e) {
             e.preventDefault();
             try {
-                const res = await fetch('http://127.0.0.1:5001/api/menu/add', {
+                const res = await fetch('/api/menu/add', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -339,7 +339,7 @@
         // 🟢 NEW: MENU ITEM MANAGER (EDIT/DELETE DISHES) 🟢
         async function loadAdminMenu() {
             try {
-                const res = await fetch(`http://127.0.0.1:5001/api/menu/${encodeURIComponent(activeBrand)}`);
+                const res = await fetch(`/api/menu/${encodeURIComponent(activeBrand)}`);
                 const menuItems = await res.json();
                 
                 const container = document.getElementById('adminMenuGrid');
@@ -373,7 +373,7 @@
         async function deleteMenuItem(id) {
             if(!confirm("Are you sure you want to delete this dish?")) return;
             try {
-                await fetch(`http://127.0.0.1:5001/api/menu/item/${id}`, { method: 'DELETE' });
+                await fetch(`/api/menu/item/${id}`, { method: 'DELETE' });
                 showToast("Dish Deleted! 🗑️");
                 loadAdminMenu(); // Refresh immediately
             } catch(err) { alert("Failed to delete."); }
@@ -393,7 +393,7 @@
         async function handleEditItem(e) {
             e.preventDefault();
             try {
-                await fetch(`http://127.0.0.1:5001/api/menu/item/${currentEditItemId}`, {
+                await fetch(`/api/menu/item/${currentEditItemId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -412,7 +412,7 @@
 
         async function fetchOrders() {
             try {
-                const res = await fetch('http://127.0.0.1:5001/api/orders');
+                const res = await fetch('/api/orders');
                 allOrders = await res.json();
                 if (allOrders.length > orderCountTracker && orderCountTracker !== 0) {
                     document.getElementById('orderDing').play();
@@ -432,7 +432,7 @@
             document.getElementById('navPath').innerText = `Network / ${activeCity} / ${brand}`;
             
             try {
-                const res = await fetch('http://127.0.0.1:5001/api/admin/analysis');
+                const res = await fetch('/api/admin/analysis');
                 const stats = await res.json();
                 const kitchen = stats.find(s => s._id === brand);
                 const rating = kitchen ? kitchen.avgRating : 0;
@@ -466,7 +466,7 @@
 
         async function resetOrders() {
             if(confirm("DANGER: This will wipe all orders and history forever. Proceed?")) {
-                await fetch('http://127.0.0.1:5001/api/reset/orders', { method: 'DELETE' });
+                await fetch('/api/reset/orders', { method: 'DELETE' });
                 location.reload(); 
             }
         }
@@ -554,7 +554,7 @@
         }
 
         async function updateStatus(id, newStatus) { 
-            await fetch(`http://127.0.0.1:5001/api/order/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: newStatus }) }); 
+            await fetch(`/api/order/${id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: newStatus }) }); 
             if(newStatus === 'Ready') showToast("SENT TO DELIVERY TEAM! 🛵");
             if(newStatus === 'Preparing') showToast("ORDER IS COOKING... 🍳");
             fetchOrders(); 

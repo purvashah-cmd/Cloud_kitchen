@@ -246,7 +246,7 @@
             if (isBusy) return;
             const container = document.getElementById('availableOrders');
             try {
-                const res = await fetch('http://127.0.0.1:5001/api/delivery/available');
+                const res = await fetch('/api/delivery/available');
                 const allGlobalOrders = await res.json();
                 
                 // 🛑 FILTER LOGIC: IF "ALL REGIONS" IS SELECTED, SHOW EVERYTHING
@@ -298,14 +298,14 @@
 
             try {
                 // 1. Assign specific driver profile name to the order
-                await fetch(`http://127.0.0.1:5001/api/order/${id}/deliveryBoy`, {
+                await fetch(`/api/order/${id}/deliveryBoy`, {
                     method: 'PATCH',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ deliveryBoy: activeDriverName })
                 });
 
                 // 2. Change status
-                await fetch(`http://127.0.0.1:5001/api/order/${id}/status`, {
+                await fetch(`/api/order/${id}/status`, {
                     method: 'PATCH',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ status: 'Out for Delivery' })
@@ -342,7 +342,7 @@
         // --- 4. COMPLETION LOGIC ---
         async function completeOrder() {
             try {
-                const res = await fetch(`http://127.0.0.1:5001/api/delivery/complete/${currentOrderId}`, { method: 'PATCH' });
+                const res = await fetch(`/api/delivery/complete/${currentOrderId}`, { method: 'PATCH' });
                 
                 if(res.ok) {
                     totalEarnings += 40;

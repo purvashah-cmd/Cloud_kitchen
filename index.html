@@ -349,8 +349,8 @@
             let stats = [], loads = [];
             try {
                 const [statsRes, loadRes] = await Promise.all([
-                    fetch('http://127.0.0.1:5001/api/admin/analysis').catch(() => null),
-                    fetch('http://127.0.0.1:5001/api/admin/kitchen-load').catch(() => null)
+                    fetch('/api/admin/analysis').catch(() => null),
+                    fetch('/api/admin/kitchen-load').catch(() => null)
                 ]);
                 if (statsRes) stats = await statsRes.json();
                 if (loadRes) loads = await loadRes.json();
@@ -472,8 +472,8 @@
 
             try {
                 const [mRes, aRes] = await Promise.all([
-                    fetch(`http://127.0.0.1:5001/api/menu/${encodeURIComponent(brand)}`),
-                    fetch('http://127.0.0.1:5001/api/admin/analysis')
+                    fetch(`/api/menu/${encodeURIComponent(brand)}`),
+                    fetch('/api/admin/analysis')
                 ]);
                 
                 currentMenu = await mRes.json();
@@ -626,7 +626,7 @@
             const totalAmount = Math.max(0, subtotal + (subtotal < 500 ? 40 : 0) - discountAmount);
             
             try {
-                const res = await fetch('http://127.0.0.1:5001/api/order', { 
+                const res = await fetch('/api/order', { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
                     body: JSON.stringify({ items: cart, brand: currentBrand, address: fullAddress, payment, userEmail: localStorage.getItem('userEmail'), totalBill: totalAmount }) 
@@ -657,7 +657,7 @@
             
             trackInterval = setInterval(async () => {
                 try {
-                    const res = await fetch(`http://127.0.0.1:5001/api/order/${orderId}`);
+                    const res = await fetch(`/api/order/${orderId}`);
                     const order = await res.json();
                     
                     document.getElementById('trackingStatus').innerText = order.status;
@@ -711,7 +711,7 @@
             const container = document.getElementById('historyList');
             container.innerHTML = `<div class="py-10 text-center opacity-30 uppercase font-bold text-xs">Loading...</div>`;
             try {
-                const res = await fetch(`http://127.0.0.1:5001/api/user-orders/${localStorage.getItem('userEmail')}`);
+                const res = await fetch(`/api/user-orders/${localStorage.getItem('userEmail')}`);
                 const data = await res.json();
                 if(!data.length) { container.innerHTML = `<p class="text-center py-20 opacity-20 font-bold uppercase text-xs">No orders</p>`; return; }
                 container.innerHTML = data.map(o => {
@@ -733,7 +733,7 @@
             const comment = prompt("Any comments about the food/delivery?");
             
             try {
-                await fetch('http://127.0.0.1:5001/api/reviews', { 
+                await fetch('/api/reviews', { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
                     body: JSON.stringify({ userEmail: localStorage.getItem('userEmail'), brand, rating: Number(rating), comment }) 
@@ -749,7 +749,7 @@
             clearTimeout(window.searchTimeout);
             window.searchTimeout = setTimeout(async () => {
                 document.getElementById('brandSection').classList.add('hidden'); document.getElementById('searchResultsSection').classList.remove('hidden');
-                const res = await fetch(`http://127.0.0.1:5001/api/search?q=${q}`);
+                const res = await fetch(`/api/search?q=${q}`);
                 const data = await res.json();
                 document.getElementById('searchGrid').innerHTML = data.map(i => {
                     const imgSrc = i.img || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400';
