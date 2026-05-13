@@ -189,7 +189,7 @@
             <div id="historyState" class="hidden">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-xl font-black italic uppercase text-slate-900">Past Deliveries</h2>
-                    <button onclick="resetDashboard()" class="text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-orange-500 transition-colors">
+                    <button onclick="closeHistory()" class="text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-orange-500 transition-colors">
                         <i class="fas fa-arrow-left mr-1"></i> Back to Radar
                     </button>
                 </div>
@@ -378,7 +378,11 @@
             startAutoRefresh();
         }
 
+        let previousState = 'searching';
+
         function showState(state) {
+            if (state !== 'history') previousState = state;
+            
             document.getElementById('searchingState').classList.toggle('hidden', state !== 'searching');
             document.getElementById('activeState').classList.toggle('hidden', state !== 'active');
             document.getElementById('successState').classList.toggle('hidden', state !== 'success');
@@ -391,6 +395,13 @@
                 document.getElementById('map').style.display = 'none';
             } else if (state === 'active') {
                 document.getElementById('map').style.display = 'block';
+            }
+        }
+
+        function closeHistory() {
+            showState(previousState);
+            if (previousState === 'searching') {
+                startAutoRefresh();
             }
         }
 
