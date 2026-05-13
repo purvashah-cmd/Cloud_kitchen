@@ -223,6 +223,18 @@ app.post('/api/auth/login', async (req, res) => {
     else res.status(401).json({ error: "Invalid credentials" });
 });
 
+app.post('/api/auth/signup', async (req, res) => {
+    try {
+        const existingUser = await User.findOne({ email: req.body.email });
+        if (existingUser) return res.status(400).json({ error: "Email already exists" });
+        const user = new User({ email: req.body.email, password: req.body.password });
+        await user.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: "Failed to create user" });
+    }
+});
+
 app.get('/api/search', async (req, res) => {
     const results = await Item.find({ name: { $regex: req.query.q, $options: 'i' } }).limit(15);
     res.json(results);
